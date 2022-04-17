@@ -2459,6 +2459,32 @@ class BaseAddSubRegPseudo<RegisterClass regtype,
              [(set regtype:$Rd, (OpNode regtype:$Rn, regtype:$Rm))]>,
       Sched<[WriteI, ReadI, ReadI]>;
 
+class BaseAddSubReg<bit isSub, bit setFlags, RegisterClass regtype, string asm,
+                     SDPatternOperator OpNode>
+    : I<(outs regtype:$Rd), (ins regtype:$Rn, regtype:$Rm),
+        asm, "\t$Rd, $Rn, $Rm", "",
+        [(set regtype:$Rd, (OpNode regtype:$Rn, regtype:$Rm))]>,
+      Sched<[WriteISReg, ReadI, ReadISReg]> {
+  // The operands are in order to match the 'addr' MI operands, so we
+  // don't need an encoder method and by-name matching. Just use the default
+  // in-order handling. Since we're using by-order, make sure the names
+  // do not match.
+  bits<5> dst;
+  bits<5> src1;
+  bits<5> src2;
+  bits<8> shift;
+  let Inst{30}    = isSub;
+  let Inst{29}    = setFlags;
+  let Inst{28-24} = 0b01011;
+  let Inst{23-22} = 0b11;
+  let Inst{21}    = 0;
+  let Inst{20-16} = src2;
+  let Inst{15-10} = 00000;
+  let Inst{9-5}   = src1;
+  let Inst{4-0}   = dst;
+
+  let DecoderMethod = "DecodeThreeAddrSRegInstruction";
+}
 class BaseAddSubSReg<bit isSub, bit setFlags, RegisterClass regtype,
                      arith_shifted_reg shifted_regtype, string asm,
                      SDPatternOperator OpNode>
@@ -2545,6 +2571,11 @@ class AddSubRegAlias<string asm, Instruction inst, RegisterClass dstRegtype,
                 (inst dstRegtype:$dst, src1Regtype:$src1, src2Regtype:$src2,
                       shiftExt)>;
 
+class AddSubRegAlias0<string asm, Instruction inst, RegisterClass dstRegtype,
+                     RegisterClass src1Regtype, RegisterClass src2Regtype>
+    : InstAlias<asm#"\t$dst, $src1, $src2",
+                (inst dstRegtype:$dst, src1Regtype:$src1, src2Regtype:$src2)>;
+
 multiclass AddSub<bit isSub, string mnemonic, string alias,
                   SDPatternOperator OpNode = null_frag> {
   let hasSideEffects = 0, isReMaterializable = 1, isAsCheapAsAMove = 1 in {
@@ -2565,9 +2596,16 @@ multiclass AddSub<bit isSub, string mnemonic, string alias,
   }
 
   // Add/Subtract register - Only used for CodeGen
-  def Wrr : BaseAddSubRegPseudo<GPR32, OpNode>;
-  def Xrr : BaseAddSubRegPseudo<GPR64, OpNode>;
-
+  // def Wrr : BaseAddSubRegPseudo<GPR32, OpNode>;
+  // def Xrr : BaseAddSubRegPseudo<GPR64, OpNode>;
+  def Wrr : BaseAddSubReg<isSub, 0, GPR32, mnemonic,
+                           OpNode> {
+    let Inst{31} = 0;
+  }
+  def Xrr : BaseAddSubReg<isSub, 0, GPR64, mnemonic,
+                           OpNode> {
+    let Inst{31} = 1;
+  }
   // Add/Subtract shifted register
   def Wrs : BaseAddSubSReg<isSub, 0, GPR32, arith_shifted_reg32, mnemonic,
                            OpNode> {
@@ -2607,10 +2645,10 @@ multiclass AddSub<bit isSub, string mnemonic, string alias,
                        addsub_shifted_imm64_neg:$imm), 0>;
 
   // Register/register aliases with no shift when SP is not used.
-  def : AddSubRegAlias<mnemonic, !cast<Instruction>(NAME#"Wrs"),
-                       GPR32, GPR32, GPR32, 0>;
-  def : AddSubRegAlias<mnemonic, !cast<Instruction>(NAME#"Xrs"),
-                       GPR64, GPR64, GPR64, 0>;
+  def : AddSubRegAlias0<mnemonic, !cast<Instruction>(NAME#"Wrr"),
+                       GPR32, GPR32, GPR32>;
+  def : AddSubRegAlias0<mnemonic, !cast<Instruction>(NAME#"Xrr"),
+                       GPR64, GPR64, GPR64>;
 
   // Register/register aliases with no shift when either the destination or
   // first source register is SP.
