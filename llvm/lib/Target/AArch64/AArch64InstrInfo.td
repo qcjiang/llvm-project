@@ -2006,8 +2006,8 @@ defm ORN  : LogicalReg<0b01, 1, "orn",
                        BinOpFrag<(or node:$LHS, (not node:$RHS))>>;
 defm ORR  : LogicalReg<0b01, 0, "orr", or>;
 
-def : InstAlias<"mov $dst, $src", (ORRWrs GPR32:$dst, WZR, GPR32:$src, 0), 2>;
-def : InstAlias<"mov $dst, $src", (ORRXrs GPR64:$dst, XZR, GPR64:$src, 0), 2>;
+def : InstAlias<"mov $dst, $src", (ORRWrr GPR32:$dst, WZR, GPR32:$src), 2>;
+def : InstAlias<"mov $dst, $src", (ORRXrr GPR64:$dst, XZR, GPR64:$src), 2>;
 
 def : InstAlias<"mvn $Wd, $Wm", (ORNWrs GPR32:$Wd, WZR, GPR32:$Wm, 0), 3>;
 def : InstAlias<"mvn $Xd, $Xm", (ORNXrs GPR64:$Xd, XZR, GPR64:$Xm, 0), 3>;

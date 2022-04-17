@@ -2926,6 +2926,33 @@ class BaseLogicalImm<bits<2> opc, RegisterClass dregtype,
   let DecoderMethod = "DecodeLogicalImmInstruction";
 }
 
+// Logical (without shifted register)
+class BaseLogicalReg<bits<2> opc, bit N, RegisterClass regtype,
+                      string asm,
+                      list<dag> pattern>
+    : I<(outs regtype:$Rd), (ins regtype:$Rn, regtype:$Rm),
+        asm, "\t$Rd, $Rn, $Rm", "", pattern>,
+      Sched<[WriteISReg, ReadI, ReadISReg]> {
+  // The operands are in order to match the 'addr' MI operands, so we
+  // don't need an encoder method and by-name matching. Just use the default
+  // in-order handling. Since we're using by-order, make sure the names
+  // do not match.
+  bits<5> dst;
+  bits<5> src1;
+  bits<5> src2;
+  bits<8> shift;
+  let Inst{30-29} = opc;
+  let Inst{28-24} = 0b01010;
+  let Inst{23-22} = 00;
+  let Inst{21}    = N;
+  let Inst{20-16} = src2;
+  let Inst{15-10} = 000000;
+  let Inst{9-5}   = src1;
+  let Inst{4-0}   = dst;
+
+  let DecoderMethod = "DecodeThreeAddrSRegInstruction";
+}
+
 // Logical (shifted register)
 class BaseLogicalSReg<bits<2> opc, bit N, RegisterClass regtype,
                       logical_shifted_reg shifted_regtype, string asm,
@@ -2957,7 +2984,9 @@ class BaseLogicalSReg<bits<2> opc, bit N, RegisterClass regtype,
 class LogicalRegAlias<string asm, Instruction inst, RegisterClass regtype>
     : InstAlias<asm#"\t$dst, $src1, $src2",
                 (inst regtype:$dst, regtype:$src1, regtype:$src2, 0)>;
-
+class LogicalRegAlias0<string asm, Instruction inst, RegisterClass regtype>
+    : InstAlias<asm#"\t$dst, $src1, $src2",
+                (inst regtype:$dst, regtype:$src1, regtype:$src2)>;
 multiclass LogicalImm<bits<2> opc, string mnemonic, SDNode OpNode,
                       string Alias> {
   let AddedComplexity = 6, isReMaterializable = 1, isAsCheapAsAMove = 1 in
@@ -3013,8 +3042,18 @@ class BaseLogicalRegPseudo<RegisterClass regtype, SDPatternOperator OpNode>
 multiclass LogicalReg<bits<2> opc, bit N, string mnemonic,
                       SDPatternOperator OpNode> {
   let isReMaterializable = 1, isAsCheapAsAMove = 1 in {
-  def Wrr : BaseLogicalRegPseudo<GPR32, OpNode>;
-  def Xrr : BaseLogicalRegPseudo<GPR64, OpNode>;
+  // def Wrr : BaseLogicalRegPseudo<GPR32, OpNode>;
+  // def Xrr : BaseLogicalRegPseudo<GPR64, OpNode>;
+  def Wrr : BaseLogicalReg<opc, N, GPR32, mnemonic,
+                          [(set GPR32:$Rd, (OpNode GPR32:$Rn,
+                                                GPR32:$Rm))]> {
+  let Inst{31} = 0;
+  }
+  def Xrr : BaseLogicalReg<opc, N, GPR64, mnemonic,
+                            [(set GPR64:$Rd, (OpNode GPR64:$Rn,
+                                                 GPR64:$Rm))]> {
+    let Inst{31} = 1;
+  }
   }
 
   def Wrs : BaseLogicalSReg<opc, N, GPR32, logical_shifted_reg32, mnemonic,
@@ -3032,6 +3071,10 @@ multiclass LogicalReg<bits<2> opc, bit N, string mnemonic,
                         !cast<Instruction>(NAME#"Wrs"), GPR32>;
   def : LogicalRegAlias<mnemonic,
                         !cast<Instruction>(NAME#"Xrs"), GPR64>;
+  def : LogicalRegAlias0<mnemonic,
+                        !cast<Instruction>(NAME#"Wrr"), GPR32>;
+  def : LogicalRegAlias0<mnemonic,
+                        !cast<Instruction>(NAME#"Xrr"), GPR64>;
 }
 
 // Split from LogicalReg to allow setting NZCV Defs
