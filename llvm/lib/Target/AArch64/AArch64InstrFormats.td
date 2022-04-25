@@ -2678,9 +2678,16 @@ multiclass AddSubS<bit isSub, string mnemonic, SDNode OpNode, string cmp,
   }
 
   // Add/Subtract register
-  def Wrr : BaseAddSubRegPseudo<GPR32, OpNode>;
-  def Xrr : BaseAddSubRegPseudo<GPR64, OpNode>;
-
+  // def Wrr : BaseAddSubRegPseudo<GPR32, OpNode>;
+  // def Xrr : BaseAddSubRegPseudo<GPR64, OpNode>;
+  def Wrr : BaseAddSubReg<isSub, 1, GPR32, mnemonic,
+                           OpNode> {
+    let Inst{31} = 0;
+  }
+  def Xrr : BaseAddSubReg<isSub, 1, GPR64, mnemonic,
+                           OpNode> {
+    let Inst{31} = 1;
+  }
   // Add/Subtract shifted register
   def Wrs : BaseAddSubSReg<isSub, 1, GPR32, arith_shifted_reg32, mnemonic,
                            OpNode> {
@@ -3081,9 +3088,19 @@ multiclass LogicalReg<bits<2> opc, bit N, string mnemonic,
 multiclass LogicalRegS<bits<2> opc, bit N, string mnemonic,
                        SDPatternOperator OpNode = null_frag> {
   let Defs = [NZCV], mayLoad = 0, mayStore = 0, hasSideEffects = 0 in {
-  def Wrr : BaseLogicalRegPseudo<GPR32, OpNode>;
-  def Xrr : BaseLogicalRegPseudo<GPR64, OpNode>;
-
+  // def Wrr : BaseLogicalRegPseudo<GPR32, OpNode>;
+  // def Xrr : BaseLogicalRegPseudo<GPR64, OpNode>;
+  def Wrr : BaseLogicalReg<opc, N, GPR32, mnemonic,
+                          [(set GPR32:$Rd, (OpNode GPR32:$Rn,
+                                                GPR32:$Rm))]> {
+  let Inst{31} = 0;
+  }
+  def Xrr : BaseLogicalReg<opc, N, GPR64, mnemonic,
+                            [(set GPR64:$Rd, (OpNode GPR64:$Rn,
+                                                 GPR64:$Rm))]> {
+    let Inst{31} = 1;
+  }
+  
   def Wrs : BaseLogicalSReg<opc, N, GPR32, logical_shifted_reg32, mnemonic,
             [(set GPR32:$Rd, (OpNode GPR32:$Rn, logical_shifted_reg32:$Rm))]> {
     let Inst{31} = 0;
