@@ -2303,7 +2303,7 @@ class MulAccumWAlias<string asm, Instruction inst>
                 (inst GPR32:$dst, GPR32:$src1, GPR32:$src2, WZR)>;
 class MulAccumXAlias<string asm, Instruction inst>
     : InstAlias<asm#"\t$dst, $src1, $src2",
-                (inst GPR64:$dst, GPR64:$src1, GPR64:$src2, XZR)>;
+                (inst GPR64:$dst, GPR64:$src1, GPR64:$src2, GPR64:$src1)>;
 class WideMulAccumAlias<string asm, Instruction inst>
     : InstAlias<asm#"\t$dst, $src1, $src2",
                 (inst GPR64:$dst, GPR32:$src1, GPR32:$src2, XZR)>;
