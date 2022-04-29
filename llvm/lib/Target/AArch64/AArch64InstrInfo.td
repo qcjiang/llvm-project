@@ -1656,15 +1656,15 @@ def : Pat<(AArch64sub_flag GPR64:$Rn, neg_addsub_shifted_imm64:$imm),
           (ADDSXri GPR64:$Rn, neg_addsub_shifted_imm64:$imm)>;
 }
 
-def : InstAlias<"neg $dst, $src", (SUBWrs GPR32:$dst, WZR, GPR32:$src, 0), 3>;
-def : InstAlias<"neg $dst, $src", (SUBXrs GPR64:$dst, XZR, GPR64:$src, 0), 3>;
+def : InstAlias<"neg $dst, $src", (SUBWrr GPR32:$dst, WZR, GPR32:$src), 3>;
+def : InstAlias<"neg $dst, $src", (SUBXrr GPR64:$dst, XZR, GPR64:$src), 3>;
 def : InstAlias<"neg $dst, $src$shift",
                 (SUBWrs GPR32:$dst, WZR, GPR32:$src, arith_shift32:$shift), 2>;
 def : InstAlias<"neg $dst, $src$shift",
                 (SUBXrs GPR64:$dst, XZR, GPR64:$src, arith_shift64:$shift), 2>;
 
-def : InstAlias<"negs $dst, $src", (SUBSWrs GPR32:$dst, WZR, GPR32:$src, 0), 3>;
-def : InstAlias<"negs $dst, $src", (SUBSXrs GPR64:$dst, XZR, GPR64:$src, 0), 3>;
+def : InstAlias<"negs $dst, $src", (SUBSWrr GPR32:$dst, WZR, GPR32:$src), 3>;
+def : InstAlias<"negs $dst, $src", (SUBSXrr GPR64:$dst, XZR, GPR64:$src), 3>;
 def : InstAlias<"negs $dst, $src$shift",
                 (SUBSWrs GPR32:$dst, WZR, GPR32:$src, arith_shift32:$shift), 2>;
 def : InstAlias<"negs $dst, $src$shift",
