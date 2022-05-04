@@ -2303,7 +2303,7 @@ class MulAccumWAlias<string asm, Instruction inst>
                 (inst GPR32:$dst, GPR32:$src1, GPR32:$src2, WZR)>;
 class MulAccumXAlias<string asm, Instruction inst>
     : InstAlias<asm#"\t$dst, $src1, $src2",
-                (inst GPR64:$dst, GPR64:$src1, GPR64:$src2, XZR)>;
+                (inst GPR64:$dst, GPR64:$src1, GPR64:$src2, GPR64:$src1)>;
 class WideMulAccumAlias<string asm, Instruction inst>
     : InstAlias<asm#"\t$dst, $src1, $src2",
                 (inst GPR64:$dst, GPR32:$src1, GPR32:$src2, XZR)>;
@@ -2749,10 +2749,10 @@ multiclass AddSubS<bit isSub, string mnemonic, SDNode OpNode, string cmp,
                   XZR, GPR64sp:$src, addsub_shifted_imm64_neg:$imm), 0>;
 
   // Compare shorthands
-  def : InstAlias<cmp#"\t$src1, $src2", (!cast<Instruction>(NAME#"Wrs")
-                  WZR, GPR32:$src1, GPR32:$src2, 0), 5>;
-  def : InstAlias<cmp#"\t$src1, $src2", (!cast<Instruction>(NAME#"Xrs")
-                  XZR, GPR64:$src1, GPR64:$src2, 0), 5>;
+  def : InstAlias<cmp#"\t$src1, $src2", (!cast<Instruction>(NAME#"Wrr")
+                  WZR, GPR32:$src1, GPR32:$src2), 5>;
+  def : InstAlias<cmp#"\t$src1, $src2", (!cast<Instruction>(NAME#"Xrr")
+                  XZR, GPR64:$src1, GPR64:$src2), 5>;
   def : InstAlias<cmp#"\t$src1, $src2", (!cast<Instruction>(NAME#"Wrx")
                   WZR, GPR32sponly:$src1, GPR32:$src2, 16), 5>;
   def : InstAlias<cmp#"\t$src1, $src2", (!cast<Instruction>(NAME#"Xrx64")
