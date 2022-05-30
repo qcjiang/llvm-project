@@ -42,6 +42,10 @@ let SchedModel = TSV110Model in {
   def TSV110UnitF     : ProcResGroup<[TSV110UnitFSU1, TSV110UnitFSU2]>;
   def TSV110UnitALUAB : ProcResGroup<[TSV110UnitALU, TSV110UnitAB]>;
   def TSV110UnitFLdSt : ProcResGroup<[TSV110UnitFSU1, TSV110UnitFSU2, TSV110UnitLdSt]>;
+  def TSV110IntegerPRF : RegisterFile<32, [GPR64common, GPR64, GPR64arg, GPR32all], [1, 1, 1], [1, 1, 1],
+                               0,  // Max moves that can be eliminated per cycle.
+                               1>; // Restrict move elimination to zero regs.
+
 }
 
 let SchedModel = TSV110Model in {
@@ -743,5 +747,11 @@ def : InstRW<[TSV110Wr_5cyc_1F, WriteAdr],    (instregex "^ST3Threev(8b|4h|2s|1d
 
 def : InstRW<[TSV110Wr_8cyc_1F],              (instregex "^ST4Fourv(8b|4h|2s|1d|16b|8h|4s|2d)$")>;
 def : InstRW<[TSV110Wr_8cyc_1F, WriteAdr],    (instregex "^ST4Fourv(8b|4h|2s|1d|16b|8h|4s|2d)_POST$")>;
+
+def : IsOptimizableRegisterMove<[
+  InstructionEquivalenceClass<[
+    ORRXrr, ORRWrr
+  ], TruePred >
+]>;
 
 } // SchedModel = TSV110Model
