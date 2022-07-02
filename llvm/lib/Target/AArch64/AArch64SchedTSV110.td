@@ -44,7 +44,7 @@ let SchedModel = TSV110Model in {
   def TSV110UnitFLdSt : ProcResGroup<[TSV110UnitFSU1, TSV110UnitFSU2, TSV110UnitLdSt]>;
   def TSV110IntegerPRF : RegisterFile<32, [GPR64common, GPR64, GPR64arg, GPR32all], [1, 1, 1], [1, 1, 1],
                                0,  // Max moves that can be eliminated per cycle.
-                               1>; // Restrict move elimination to zero regs.
+                               0>; // Restrict move elimination to zero regs.
 
 }
 

@@ -425,8 +425,9 @@ bool RegisterFile::canEliminateMove(const WriteState &WS, const ReadState &RS,
 
 bool RegisterFile::tryEliminateMoveOrSwap(MutableArrayRef<WriteState> Writes,
                                           MutableArrayRef<ReadState> Reads) {
-  if (Writes.size() != Reads.size())
-    return false;
+  // NOT necessary for AArch64 MOV is equivalent to ORR need 2 read 1 write
+  // if (Writes.size() != Reads.size())
+  //   return false;
 
   // This logic assumes that writes and reads are contributed by a register move
   // or a register swap operation. In particular, it assumes a simple register
