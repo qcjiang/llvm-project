@@ -332,11 +332,16 @@ createWinCOFFStreamer(MCContext &Ctx, std::unique_ptr<MCAsmBackend> &&TAB,
                                       IncrementalLinkerCompatible);
 }
 
-namespace {
+namespace llvm {
+namespace AArch64_MC {
 
 class AArch64MCInstrAnalysis : public MCInstrAnalysis {
 public:
   AArch64MCInstrAnalysis(const MCInstrInfo *Info) : MCInstrAnalysis(Info) {}
+
+  
+#define GET_STIPREDICATE_DECLS_FOR_MC_ANALYSIS
+#include "AArch64GenSubtargetInfo.inc"
 
   bool evaluateBranch(const MCInst &Inst, uint64_t Addr, uint64_t Size,
                       uint64_t &Target) const override {
@@ -388,10 +393,15 @@ public:
   }
 };
 
-} // end anonymous namespace
+#define GET_STIPREDICATE_DEFS_FOR_MC_ANALYSIS
+#include "AArch64GenSubtargetInfo.inc"
+
+} // end of namespace AArch64_MC
+
+} // end of namespace llvm
 
 static MCInstrAnalysis *createAArch64InstrAnalysis(const MCInstrInfo *Info) {
-  return new AArch64MCInstrAnalysis(Info);
+  return new AArch64_MC::AArch64MCInstrAnalysis(Info);
 }
 
 // Force static initialization.
