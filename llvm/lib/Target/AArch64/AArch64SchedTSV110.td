@@ -249,6 +249,12 @@ def TSV110Wr_5cyc_1ALU_1F      : SchedWriteRes<[TSV110UnitALU,
   let NumMicroOps = 2;
 }
 
+def TSV110Wr_5cyc_2LdSt     : SchedWriteRes<[TSV110UnitLdSt,
+                                            TSV110UnitLdSt]> {
+  let Latency     = 5;
+  let NumMicroOps = 2;
+}
+
 def TSV110Wr_6cyc_2LdSt        : SchedWriteRes<[TSV110UnitLdSt,
                                                 TSV110UnitLdSt]> {
   let Latency = 6;
@@ -505,7 +511,7 @@ def : InstRW<[TSV110Wr_5cyc_1LdSt],                      (instregex "^LDUR[BDHSQ
 def : InstRW<[TSV110Wr_5cyc_1LdSt, WriteAdr],            (instregex "^LDR[BDHSQ](post|pre)")>;
 def : InstRW<[TSV110Wr_5cyc_1LdSt],                      (instregex "^LDR[BDHSQ]ui")>;
 def : InstRW<[TSV110Wr_6cyc_1LdSt_1ALUAB, ReadAdrBase],  (instregex "^LDR(Q|D|H|S|B)ro(W|X)$")>;
-def : InstRW<[TSV110Wr_5cyc_1LdSt, WriteLDHi],           (instregex "^LDN?P[DQS]i")>;
+def : InstRW<[TSV110Wr_5cyc_2LdSt, WriteLDHi],           (instregex "^LDN?P[DQS]i")>;
 def : InstRW<[TSV110Wr_5cyc_1LdSt, WriteLDHi, WriteAdr], (instregex "^LDP[DQS](post|pre)")>;
 
 
