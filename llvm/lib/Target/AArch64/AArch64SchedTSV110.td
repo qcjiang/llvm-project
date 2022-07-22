@@ -427,8 +427,8 @@ def : InstRW<[TSV110Wr_4cyc_1LdSt],     (instrs LDRSWl)>;
 def : InstRW<[TSV110Wr_4cyc_1LdSt],     (instregex "^LDR(BB|HH|W|X)ui$")>;
 def : InstRW<[TSV110Wr_4cyc_1LdSt],     (instregex "^LDRS(BW|BX|HW|HX|W)ui$")>;
 
-def : InstRW<[TSV110Wr_4cyc_1LdSt, WriteAdr],     (instregex "^LDR(BB|HH|W|X)(post|pre)$")>;
-def : InstRW<[TSV110Wr_4cyc_1LdSt, WriteAdr],     (instregex "^LDRS(BW|BX|HW|HX|W)(post|pre)$")>;
+def : InstRW<[TSV110Wr_1cyc_1LdSt, WriteAdr],     (instregex "^LDR(BB|HH|W|X)(post|pre)$")>;
+def : InstRW<[TSV110Wr_1cyc_1LdSt, WriteAdr],     (instregex "^LDRS(BW|BX|HW|HX|W)(post|pre)$")>;
 
 def : InstRW<[TSV110Wr_4cyc_1LdSt],     (instregex "^LDTR(B|H|W|X)i$")>;
 def : InstRW<[TSV110Wr_4cyc_1LdSt],     (instregex "^LDUR(BB|HH|W|X)i$")>;
@@ -437,11 +437,11 @@ def : InstRW<[TSV110Wr_4cyc_1LdSt],     (instregex "^LDURS(BW|BX|HW|HX|W)i$")>;
 
 def : InstRW<[TSV110Wr_4cyc_1LdSt, WriteLDHi],     (instregex "^LDNP(W|X)i$")>;
 def : InstRW<[TSV110Wr_4cyc_1LdSt, WriteLDHi],     (instregex "^LDP(W|X)i$")>;
-def : InstRW<[TSV110Wr_4cyc_1LdSt_1ALUAB, WriteLDHi, WriteAdr],(instregex "^LDP(W|X)(post|pre)$")>;
+def : InstRW<[TSV110Wr_1cyc_1LdSt_1ALUAB, WriteLDHi, WriteAdr],(instregex "^LDP(W|X)(post|pre)$")>;
 
 def : InstRW<[TSV110Wr_4cyc_1LdSt, WriteLDHi],           (instrs LDPSWi)>;
-def : InstRW<[TSV110Wr_4cyc_1LdSt, WriteLDHi, WriteAdr], (instrs LDPSWpost)>;
-def : InstRW<[TSV110Wr_4cyc_1LdSt, WriteLDHi, WriteAdr], (instrs LDPSWpre)>;
+def : InstRW<[TSV110Wr_1cyc_1LdSt, WriteLDHi, WriteAdr], (instrs LDPSWpost)>;
+def : InstRW<[TSV110Wr_1cyc_1LdSt, WriteLDHi, WriteAdr], (instrs LDPSWpre)>;
 
 def : InstRW<[TSV110Wr_4cyc_1LdSt],     (instrs PRFMl)>;
 def : InstRW<[TSV110Wr_4cyc_1LdSt],     (instrs PRFUMi)>;
@@ -508,11 +508,11 @@ def : InstRW<[TSV110Wr_2cyc_1F],      (instregex "^FMOV[SD][ir]$")>;
 
 def : InstRW<[TSV110Wr_5cyc_1LdSt],                      (instregex "^LDR[DSQ]l")>;
 def : InstRW<[TSV110Wr_5cyc_1LdSt],                      (instregex "^LDUR[BDHSQ]i")>;
-def : InstRW<[TSV110Wr_5cyc_1LdSt, WriteAdr],            (instregex "^LDR[BDHSQ](post|pre)")>;
+def : InstRW<[TSV110Wr_1cyc_1LdSt, WriteAdr],            (instregex "^LDR[BDHSQ](post|pre)")>;
 def : InstRW<[TSV110Wr_5cyc_1LdSt],                      (instregex "^LDR[BDHSQ]ui")>;
 def : InstRW<[TSV110Wr_6cyc_1LdSt_1ALUAB, ReadAdrBase],  (instregex "^LDR(Q|D|H|S|B)ro(W|X)$")>;
 def : InstRW<[TSV110Wr_5cyc_2LdSt, WriteLDHi],           (instregex "^LDN?P[DQS]i")>;
-def : InstRW<[TSV110Wr_5cyc_1LdSt, WriteLDHi, WriteAdr], (instregex "^LDP[DQS](post|pre)")>;
+def : InstRW<[TSV110Wr_1cyc_1LdSt, WriteLDHi, WriteAdr], (instregex "^LDP[DQS](post|pre)")>;
 
 
 // FP Store Instructions
@@ -706,9 +706,9 @@ def  : InstRW<[TSV110Wr_8cyc_3F_2LdSt],           (instregex "LD4i(8|16|32|64)$"
 def  : InstRW<[TSV110Wr_8cyc_3F_2LdSt, WriteAdr], (instregex "LD4i(8|16|32|64)_POST$")>;
 
 def : InstRW<[TSV110Wr_5cyc_1LdSt],               (instregex "^LD1Onev(8b|4h|2s|1d|16b|8h|4s|2d)$")>;
-def : InstRW<[TSV110Wr_5cyc_1LdSt, WriteAdr],     (instregex "^LD1Onev(8b|4h|2s|1d|16b|8h|4s|2d)_POST$")>;
+def : InstRW<[TSV110Wr_1cyc_1LdSt, WriteAdr],     (instregex "^LD1Onev(8b|4h|2s|1d|16b|8h|4s|2d)_POST$")>;
 def : InstRW<[TSV110Wr_5cyc_1LdSt],               (instregex "^LD1Twov(8b|4h|2s|1d|16b|8h|4s|2d)$")>;
-def : InstRW<[TSV110Wr_5cyc_1LdSt, WriteAdr],     (instregex "^LD1Twov(8b|4h|2s|1d|16b|8h|4s|2d)_POST$")>;
+def : InstRW<[TSV110Wr_1cyc_1LdSt, WriteAdr],     (instregex "^LD1Twov(8b|4h|2s|1d|16b|8h|4s|2d)_POST$")>;
 def : InstRW<[TSV110Wr_6cyc_3LdSt],               (instregex "^LD1Threev(8b|4h|2s|1d|16b|8h|4s|2d)$")>;
 def : InstRW<[TSV110Wr_6cyc_3LdSt, WriteAdr],     (instregex "^LD1Threev(8b|4h|2s|1d|16b|8h|4s|2d)_POST$")>;
 def : InstRW<[TSV110Wr_6cyc_2LdSt],               (instregex "^LD1Fourv(8b|4h|2s|1d|16b|8h|4s|2d)$")>;
